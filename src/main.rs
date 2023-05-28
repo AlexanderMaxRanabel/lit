@@ -1,7 +1,9 @@
 use std::fs;
+use std::fs::File;
+use std::io::prelude::*;
 use std::env;
 
-fn init(name: String) {
+fn init(name: String) -> std::io::Result<()> {
     match fs::create_dir(name.clone()) {
         Ok(()) => {
             let gitpath = name.as_str().to_owned() + "/.git";
@@ -57,12 +59,33 @@ fn init(name: String) {
                         },
                         Err(err) => println!("Failed to create directory: {}", err),
                     }
+
+                    let configpath = gitpath.as_str().to_owned() + "/config";
+                    let descpath = gitpath.as_str().to_owned() + "/description";
+                    let mut configfile = File::create(configpath)?;
+                    let mut descfile = File::create(descpath)?;
+
+                    writeln!(configfile, "[core]")?;
+                    writeln!(configfile, "	repositoryformatversion = 0")?;
+                    writeln!(configfile, "	filemode = false")?;
+                    writeln!(configfile, "	bare = false")?;
+                    writeln!(configfile, "	logallrefupdates = true")?;
+                    writeln!(configfile, "  symlinks = false")?;
+                    writeln!(configfile, "	ignorecase = true")?;
+
+                    configfile.flush()?;
+
+                    writeln!(descfile, "Unnamed repository; edit this file 'description' to name the repository. ")?;
+
+                    descfile.flush()?;
                 },
                 Err(err) => println!("Failed to create directory: {}", err),
             }
+
         },
         Err(err) => println!("Failed to create directory: {}", err),
     }
+    Ok(())
 }
 
 fn main() {
