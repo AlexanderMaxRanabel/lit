@@ -65,15 +65,16 @@ fn init(name: String) -> std::io::Result<()> {
                     let mut configfile = File::create(configpath)?;
                     let mut descfile = File::create(descpath)?;
 
-                    writeln!(configfile, "[core]")?;
-                    writeln!(configfile, "	repositoryformatversion = 0")?;
-                    writeln!(configfile, "	filemode = false")?;
-                    writeln!(configfile, "	bare = false")?;
-                    writeln!(configfile, "	logallrefupdates = true")?;
-                    writeln!(configfile, "  symlinks = false")?;
-                    writeln!(configfile, "	ignorecase = true")?;
-
-                    configfile.flush()?;
+                    let configfile_content = r#"
+                    [core]
+	                        repositoryformatversion = 0
+	                        filemode = false
+	                        bare = false
+	                        logallrefupdates = true
+	                        symlinks = false
+	                        ignorecase = true
+                    "#;
+                    configfile.write_all(configfile_content.as_bytes())?;
 
                     writeln!(descfile, "Unnamed repository; edit this file 'description' to name the repository. ")?;
 
