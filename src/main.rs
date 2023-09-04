@@ -62,8 +62,10 @@ fn init(name: String) -> std::io::Result<()> {
 
                     let configpath = gitpath.as_str().to_owned() + "/config";
                     let descpath = gitpath.as_str().to_owned() + "/description";
+                    let headpath = gitpath.as_str().to_owned() + "/HEAD";
                     let mut configfile = File::create(configpath)?;
                     let mut descfile = File::create(descpath)?;
+                    let mut headfile = File::create(headpath)?;
 
                     let configfile_content = r#"
                     [core]
@@ -79,6 +81,10 @@ fn init(name: String) -> std::io::Result<()> {
                     writeln!(descfile, "Unnamed repository; edit this file 'description' to name the repository. ")?;
 
                     descfile.flush()?;
+
+                    writeln!(headfile, "ref: refs/heads/master")?;
+
+                    headfile.flush()?;
                 },
                 Err(err) => println!("Failed to create directory: {}", err),
             }
@@ -97,7 +103,7 @@ fn main() {
 
         match argument.as_str() {
             "init" => {
-                init(name);
+                let _ = init(name);
             },
             _ => {
                 println!("Unknown");
